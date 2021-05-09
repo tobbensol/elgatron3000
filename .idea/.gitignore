@@ -10,6 +10,7 @@
 /.env
 #rom
 /data/roms/red.gb
+#data
 /data/current.png
 /data/commands
 /data/moves
