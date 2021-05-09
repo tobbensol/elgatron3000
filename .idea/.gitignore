@@ -6,3 +6,7 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+#env file
+/.env/
+#rom
+/data/roms/red.gb/
