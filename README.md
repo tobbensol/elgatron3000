@@ -27,8 +27,8 @@ data:
 wait:
 - lets some in game time pass, this can be great in cutscenes where they don't really make sense without animations*_****_*
 
-how to write commands:
-the basic syntax is that you can write a command, and if you want to repeat it you can write the number of times you want it repeated behid, so:
-command command command can be written as command 3
-you can mix and match this however many times you want
-a 3 b 4 start 2 n 3 == a a a b b b b start start n n n
+how to write commands:  
+the basic syntax is that you can write a command, and if you want to repeat it you can write the number of times you want it repeated behid, so:  
+command command command can be written as command 3  
+you can mix and match this however many times you want  
+a 3 b 4 start 2 n 3 == a a a b b b b start start n n n  
