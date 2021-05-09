@@ -7,7 +7,7 @@ const fs = require('fs');
 let Token = process.env.TOKEN;
 let checker = (arr, target) => target.every(v => arr.includes(v));
 
-var pokemonCommands = ["n", "s", "w", "e", "a", "b", "start", "select", "save", "wait"];
+var pokemonCommands = ["n", "s", "w", "e", "a", "b", "start", "select", "save", "wait", "state", "data"];
 var actionqueue = []
 var lastMsgID;
 var totalCommands;
@@ -28,50 +28,26 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    if (!(msg.author.id == "837784141663043695")){
-        if (msg.content.startsWith("B=====D")) {
-            if (msg.content.endsWith("help")) {
-                msg.channel.send("this command has not been implemented yet, but wow... thats a big cock")
+    if (msg.author.id == "837784141663043695"){return;}
+
+    if (msg.channel.id === "508394694368034837" || msg.channel.id === "839100318893211669") {
+        var finalmsg = []
+        var content = msg.content.split(" ")
+        for (element in content) {
+            if (!isNaN(content[element])) {
+                for (var i = 0; i < parseInt(content[element] - 1); i++) {
+                    finalmsg.push(finalmsg[finalmsg.length - 1])
+                }
+            } else {
+                finalmsg.push(content[element])
             }
         }
+        msg.content = finalmsg.join(",")
 
-        if (msg.channel.id === "508394694368034837" || msg.channel.id === "839100318893211669") {
-            var finalmsg = []
-            a = msg.content.split(" ")
-            msg.content = ""
-            for (i in a) {
-                c = a[i]
-                if (!isNaN(c)) {
-                    for (var i = 0; i < parseInt(c - 1); i++) {
-                        finalmsg.push(finalmsg[finalmsg.length - 1])
-                    }
-                } else {
-                    finalmsg.push(c)
-                }
-            }
-            msg.content = finalmsg.join(",")
-
-            if (checker(pokemonCommands, msg.content.split(","))) {
-                actionqueue.push(msg)
-                msg.delete();
-                totalCommands += 1;
-            }
-            switch (msg.content) {
-                case "state":
-                    msg.channel.send(" ", {files: ["./data/current.png"]});
-                    break;
-                case "save":
-                    fs.writeFile("./data/moves", moves.toString(), (err) => {
-                        console.log("error:", err)
-                    });
-                    fs.writeFile("./data/commands", totalCommands.toString(), (err) => {
-                        console.log("error:", err)
-                    });
-                    break;
-                case "data":
-                    msg.channel.send("we have made " + moves + " moves in " + totalCommands + " commands, that is an avergage of " + Math.round(moves/totalCommands*100)/100 + " moves per command");
-                    break;
-            }
+        if (checker(pokemonCommands, msg.content.split(","))) {
+            actionqueue.push(msg)
+            msg.delete();
+            totalCommands += 1;
         }
     }
 });
@@ -89,8 +65,7 @@ function refreshData() {
     if(actionqueue.length != 0){
         var msg = actionqueue[0]
         var commands = msg.content.split(",")
-        var command = commands[0]
-        pokemon.doMove(command)
+        perform(commands[0])
         moves += 1
         commands.shift()
         msg.content = commands.join(",")
@@ -98,23 +73,60 @@ function refreshData() {
         if(actionqueue[0].content == ''){
             actionqueue.shift()
         }
-
-        sleep(25)
-
-        msg.channel.messages.fetch(lastMsgID)
-            .then(msg => msg.delete())
-            .catch(console.error);
-
-        if(commands.length == 0 && actionqueue.length == 0){
-            msg.channel.send( "**"+command+"**"+ actionqueue.join(","), { files: ["./data/current.png"]})
-                .then(msg => lastMsgID = msg.id)
-        }
-        else{
-            msg.channel.send( "**"+command+"**,"+ actionqueue.join(","), { files: ["./data/current.png"]})
-                .then(msg => lastMsgID = msg.id)
-        }
     }
     setTimeout(refreshData, 1300);
+}
+
+function perform(command){
+    switch (command){
+        case "state":
+            msg.channel.send(" ", {files: ["./data/current.png"]});
+            break;
+        case "save":
+            pokemon.doMove(command)
+            sendstate(command)
+            fs.writeFile("./data/moves", moves.toString(), (err) => {
+                console.log("error:", err)
+            });
+            fs.writeFile("./data/commands", totalCommands.toString(), (err) => {
+                console.log("error:", err)
+            });
+            break;
+        case "data":
+            msg.channel.send("we have made " + moves + " moves in " + totalCommands + " commands, that is an avergage of " + Math.round(moves/totalCommands*100)/100 + " moves per command");
+            break;
+        case "n":
+        case "s":
+        case "e":
+        case "w":
+        case "a":
+        case "b":
+        case "start":
+        case "select":
+        case "wait":
+            pokemon.doMove(command)
+            sendstate(command)
+            break;
+    }
+}
+
+function sendstate(currentmove){
+    msg = actionqueue[0]
+
+    sleep(25)
+
+    msg.channel.messages.fetch(lastMsgID)
+        .then(msg => msg.delete())
+        .catch(console.error);
+
+    if(actionqueue[0].length == 0 && actionqueue.length == 0){
+        msg.channel.send( "**"+currentmove+"**"+ actionqueue.join(","), { files: ["./data/current.png"]})
+            .then(msg => lastMsgID = msg.id)
+    }
+    else{
+        msg.channel.send( "**"+currentmove+"**,"+ actionqueue.join(","), { files: ["./data/current.png"]})
+            .then(msg => lastMsgID = msg.id)
+    }
 }
 
 refreshData();

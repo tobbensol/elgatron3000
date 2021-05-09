@@ -24,6 +24,9 @@ state:
 data:
 - shows you how many moves you have made and how many commands you have done them in. it also tells you the average amount of moves per command  
 
+wait:
+- lets some in game time pass, this can be great in cutscenes where they don't really make sense without animations
+
 how to write commands:
 the basic syntax is that you can write a command, and if you want to repeat it you can write the number of times you want it repeated behid, so:
 command command command can be written as command 3
