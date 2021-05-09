@@ -1,4 +1,4 @@
-Elgatron3000
+**Elgatron3000**  
 elgatron300 is a discord bot that was primarily built for me to try out Node.js and discord.js and secondarily built for me to make something to play pokémon with my friends like twith plays pokémon
 
 the bot is not well-made, and this is the first time I am using Node, so it is quite amteurish and built upon an unfinished emulator
