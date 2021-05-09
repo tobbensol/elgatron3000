@@ -41,13 +41,12 @@ function doMove(command){
             press(Gameboy.KEYMAP.SELECT ,50 , true)
             break;
         case "save":
-            for(var i = 0; i < 3; i++){
-                press(Gameboy.KEYMAP.A, 450, false)
-            }
+            press(Gameboy.KEYMAP.A, 450, false)
+            press(Gameboy.KEYMAP.A, 450, false)
+            press(Gameboy.KEYMAP.A, 450, true)
             fs.writeFile("./data/saveData",JSON.stringify(gameboy.getSaveData()), (err) => {
                 console.log("error:", err)
             })
-            savePNG()
             break;
         case "wait":
             emulatorLoop(1000)
@@ -87,4 +86,4 @@ function savePNG(){
     })
 }
 
-module.exports = {doMove, savePNG};
+module.exports = {doMove};
