@@ -7,6 +7,6 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 #env file
-/.env/
+/.env
 #rom
-/data/roms/red.gb/
+/data/roms/red.gb
