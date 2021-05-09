@@ -23,6 +23,8 @@ fs.readFile("./data/moves", (err, data) => {
     moves = newData
 })
 
+refreshData();
+
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -52,29 +54,39 @@ client.on('message', msg => {
     }
 });
 
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds){
-            break;
-        }
-    }
-}
-
 function refreshData() {
     if(actionqueue.length != 0){
         var msg = actionqueue[0]
         var commands = msg.content.split(",")
-        perform(commands[0])
+        var command = commands[0]
         moves += 1
         commands.shift()
         msg.content = commands.join(",")
         actionqueue[0] = msg
+        perform(command)
         if(actionqueue[0].content == ''){
             actionqueue.shift()
         }
     }
     setTimeout(refreshData, 1300);
+}
+
+function sendstate(currentmove){
+    sleep(25)
+    msg = actionqueue[0]
+
+    msg.channel.messages.fetch(lastMsgID)
+        .then(msg => msg.delete())
+        .catch(console.error);
+
+    if(actionqueue.length == 1 && msg.toString().length == 0){
+        msg.channel.send( "**"+currentmove+"**"+ actionqueue.join(","), { files: ["./data/current.png"]})
+            .then(msg => lastMsgID = msg.id)
+    }
+    else{
+        msg.channel.send( "**"+currentmove+"**,"+ actionqueue.join(","), { files: ["./data/current.png"]})
+            .then(msg => lastMsgID = msg.id)
+    }
 }
 
 function perform(command){
@@ -85,6 +97,7 @@ function perform(command){
         case "save":
             pokemon.doMove(command)
             sendstate(command)
+
             fs.writeFile("./data/moves", moves.toString(), (err) => {
                 console.log("error:", err)
             });
@@ -110,25 +123,13 @@ function perform(command){
     }
 }
 
-function sendstate(currentmove){
-    msg = actionqueue[0]
-
-    sleep(25)
-
-    msg.channel.messages.fetch(lastMsgID)
-        .then(msg => msg.delete())
-        .catch(console.error);
-
-    if(actionqueue[0].length == 0 && actionqueue.length == 0){
-        msg.channel.send( "**"+currentmove+"**"+ actionqueue.join(","), { files: ["./data/current.png"]})
-            .then(msg => lastMsgID = msg.id)
-    }
-    else{
-        msg.channel.send( "**"+currentmove+"**,"+ actionqueue.join(","), { files: ["./data/current.png"]})
-            .then(msg => lastMsgID = msg.id)
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
     }
 }
-
-refreshData();
 
 client.login(Token);
